@@ -1,1 +1,29 @@
+import asyncio
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import Command
+from aiogram.types import Message
 
+TOKEN = "8803485563:AAG9ZztHf2zEntVU5fExvEMp5QlmG__6QyY"
+
+dp = Dispatcher()
+
+@dp.message(Command("start"))
+async def command_start_handler(message: Message) -> None:
+    user_id = message.from_user.id
+    full_name = message.from_user.full_name
+
+    bio = "Profil biosi"
+    tugilgan_yil = "2012"
+
+    javob = "ID: " + str(user_id) + "\nFull Name: " + full_name + "\nBio: " + bio + "\nTug'ilgan yil: " + tugilgan_yil
+
+    await message.answer(javob)
+
+
+async def main() -> None:
+    bot = Bot(token=TOKEN)
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
