@@ -1,29 +1,49 @@
 import asyncio
-from aiogram import Bot, Dispatcher, F
-from aiogram.filters import Command
-from aiogram.types import Message
+import logging
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import CommandStart
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-TOKEN = "8803485563:AAG9ZztHf2zEntVU5fExvEMp5QlmG__6QyY"
+# Move token to environment variable
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(name)
+
+bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-@dp.message(Command("start"))
-async def command_start_handler(message: Message) -> None:
-    user_id = message.from_user.id
-    full_name = message.from_user.full_name
+@dp.message(CommandStart())
+async def start_command(message: types.Message):
+    hafta_kunlari = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"]
+    
+    inline_builder = InlineKeyboardBuilder()
+    
+    for kun in hafta_kunlari:
+        inline_builder.button(text=kun, callback_data=f"kun_{kun.lower()}")
+    
+    inline_builder.adjust(2)
+    
+    await message.answer(
+        text=f"Salom, {message.from_user.full_name}!\n\nPastda 7 ta hafta kunlari turibdi:",
+        reply_markup=inline_builder.as_markup()
+    )
 
-    bio = "Profil biosi"
-    tugilgan_yil = "2012"
+@dp.callback_query(lambda c: c.data.startswith('kun_'))
+async def process_callback_kun(callback_query: types.CallbackQuery):
+    kun_nomi = callback_query.data.split('_')[1].capitalize()
+    await callback_query.answer(f"Siz {kun_nomi} kunini tanladingiz!")
 
-    javob = "ID: " + str(user_id) + "\nFull Name: " + full_name + "\nBio: " + bio + "\nTug'ilgan yil: " + tugilgan_yil
-
-    await message.answer(javob)
-
-
-async def main() -> None:
-    bot = Bot(token=TOKEN)
-    await dp.start_polling(bot)
-
+async def main():
+    logger.info("Bot muvaffaqiyatli ishga tushdi...")
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await bot.session.close()
 
 if __name__ == "__main__":
     asyncio.run(main())
