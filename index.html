@@ -1,49 +1,34 @@
-import asyncio
-import logging
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import CommandStart
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+      <meta name="wiewport" content="width=device-width,initial-scala=1,0">
+    <title>Nafisa portfolia</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+  <nav>
+      <ul class="right-box">
+        <li><a href="#">works</a></li>
+          <li><a href="#">blog</a></li>
+          <li><a href="#">contact</a></li>
+       </ul>
+      </nav>
+       </header>
+    <main>
+    <div class="menu-text">
+        <div>
+           <h1>hi I am Nafisa web devoloper</h1>
+            <p>amat minim molit non deserute ullamco est sit aliqua
+            dolor do amet sint.Velit official consequat duis enim velit mollit.
+            Exercitation veniam consequat sunt nostrud amet.</p>
 
-# Move token to environment variable
-import os
-from dotenv import load_dotenv
+        </div>
 
-load_dotenv()
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+         </div>
+    </main>
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(name)
+</body>
+</html>
 
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
-
-@dp.message(CommandStart())
-async def start_command(message: types.Message):
-    hafta_kunlari = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"]
-    
-    inline_builder = InlineKeyboardBuilder()
-    
-    for kun in hafta_kunlari:
-        inline_builder.button(text=kun, callback_data=f"kun_{kun.lower()}")
-    
-    inline_builder.adjust(2)
-    
-    await message.answer(
-        text=f"Salom, {message.from_user.full_name}!\n\nPastda 7 ta hafta kunlari turibdi:",
-        reply_markup=inline_builder.as_markup()
-    )
-
-@dp.callback_query(lambda c: c.data.startswith('kun_'))
-async def process_callback_kun(callback_query: types.CallbackQuery):
-    kun_nomi = callback_query.data.split('_')[1].capitalize()
-    await callback_query.answer(f"Siz {kun_nomi} kunini tanladingiz!")
-
-async def main():
-    logger.info("Bot muvaffaqiyatli ishga tushdi...")
-    try:
-        await dp.start_polling(bot)
-    finally:
-        await bot.session.close()
-
-if __name__ == "__main__":
-    asyncio.run(main())
